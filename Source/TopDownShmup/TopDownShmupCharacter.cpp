@@ -33,3 +33,48 @@ ATopDownShmupCharacter::ATopDownShmupCharacter()
 	TopDownCameraComponent->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
 }
+
+
+void ATopDownShmupCharacter::BeginPlay()
+{
+    Super::BeginPlay();
+    
+    if (WeaponClass)
+    {
+        UWorld* World = GetWorld();
+        
+        if (World)
+        {
+            FActorSpawnParameters SpawnParams;
+            SpawnParams.Owner = this;
+            SpawnParams.Instigator = GetInstigator();
+            
+            FRotator Rotation(0.0f, 0.0f, -90.0f);
+            
+            MyWeapon = World->SpawnActor<AWeapon>(WeaponClass, FVector::ZeroVector, Rotation, SpawnParams);
+            
+            if (MyWeapon)
+            {
+                MyWeapon->WeaponMesh->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), TEXT("WeaponPoint"));
+            }
+            
+        }
+    }
+}
+
+
+void ATopDownShmupCharacter::OnStartFire()
+{
+    if (WeaponClass)
+    {
+        MyWeapon->OnStartFire();
+    }
+}
+
+void ATopDownShmupCharacter::OnStopFire()
+{
+    if (WeaponClass)
+    {
+        MyWeapon->OnStopFire();
+    }
+}

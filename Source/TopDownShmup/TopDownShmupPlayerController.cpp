@@ -2,6 +2,7 @@
 
 #include "TopDownShmupPlayerController.h"
 #include "TopDownShmup.h"
+#include "TopDownShmupCharacter.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 
 ATopDownShmupPlayerController::ATopDownShmupPlayerController()
@@ -28,9 +29,9 @@ void ATopDownShmupPlayerController::SetupInputComponent()
 	// set up gameplay key bindings
 	Super::SetupInputComponent();
 
-	InputComponent->BindAction("SetDestination", IE_Pressed, this, &ATopDownShmupPlayerController::OnSetDestinationPressed);
-	InputComponent->BindAction("SetDestination", IE_Released, this, &ATopDownShmupPlayerController::OnSetDestinationReleased);
-
+	InputComponent->BindAction("Fire", IE_Pressed, this, &ATopDownShmupPlayerController::OnStartFire);
+	InputComponent->BindAction("Fire", IE_Released, this, &ATopDownShmupPlayerController::OnStopFire);
+    
 	// support touch devices 
 	InputComponent->BindTouch(EInputEvent::IE_Pressed, this, &ATopDownShmupPlayerController::MoveToTouchLocation);
 	InputComponent->BindTouch(EInputEvent::IE_Repeat, this, &ATopDownShmupPlayerController::MoveToTouchLocation);
@@ -81,17 +82,17 @@ void ATopDownShmupPlayerController::SetNewMoveDestination(const FVector DestLoca
 	}
 }
 
-void ATopDownShmupPlayerController::OnSetDestinationPressed()
-{
-	// set flag to keep updating destination until released
-	bMoveToMouseCursor = true;
-}
+//void ATopDownShmupPlayerController::OnSetDestinationPressed()
+//{
+//	// set flag to keep updating destination until released
+//	bMoveToMouseCursor = true;
+//}
 
-void ATopDownShmupPlayerController::OnSetDestinationReleased()
-{
-	// clear flag to indicate we should stop updating the destination
-	bMoveToMouseCursor = false;
-}
+//void ATopDownShmupPlayerController::OnSetDestinationReleased()
+//{
+//	// clear flag to indicate we should stop updating the destination
+//	bMoveToMouseCursor = false;
+//}
 
 void ATopDownShmupPlayerController::MoveForward(float Value)
 {
@@ -135,4 +136,30 @@ void ATopDownShmupPlayerController::UpdateMouseLook()
             Pawn->SetActorRotation(rotation);
         }
     }
+}
+
+
+void ATopDownShmupPlayerController::OnStartFire()
+{
+    APawn* const Pawn = GetPawn();
+    ATopDownShmupCharacter *MyCharacter = Cast<ATopDownShmupCharacter>(Pawn);
+    
+    if (MyCharacter)
+    {
+        MyCharacter->OnStartFire();
+    }
+}
+
+
+
+void ATopDownShmupPlayerController::OnStopFire()
+{
+    APawn* const Pawn = GetPawn();
+    ATopDownShmupCharacter *MyCharacter = Cast<ATopDownShmupCharacter>(Pawn);
+    
+    if (MyCharacter)
+    {
+        MyCharacter->OnStopFire();
+    }
+
 }

@@ -30,8 +30,12 @@ protected:
 	void SetNewMoveDestination(const FVector DestLocation);
 
 	/** Input handlers for SetDestination action. */
-	void OnSetDestinationPressed();
-	void OnSetDestinationReleased();
+	//void OnSetDestinationPressed();
+	//void OnSetDestinationReleased();
+    
+    
+    void OnStartFire();
+    void OnStopFire();
     
     
     void MoveForward(float Value);

@@ -6,6 +6,11 @@
 #include "GameFramework/Actor.h"
 #include "UObject/Object.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Components/AudioComponent.h"
+#include "Particles/ParticleSystem.h"
+#include "Particles/ParticleSystemComponent.h"
+#include "Sound/SoundCue.h"
+#include "Kismet/GameplayStatics.h"
 #include "Weapon.generated.h"
 
 UCLASS()
@@ -21,12 +26,27 @@ public:
         USkeletalMeshComponent* WeaponMesh;
     
     virtual void OnStartFire();
-    
     virtual void OnStopFire();
+    
+    UPROPERTY(EditDefaultsOnly, Category=Sound)
+        USoundCue* FireLoopSound;
+    UPROPERTY(EditDefaultsOnly, Category=Sound)
+        USoundCue* FireFinishSound;
+    
+    UPROPERTY(EditDefaultsOnly, Category=FX)
+        UParticleSystem* MuzzleFX;
+    
+    UPROPERTY(Transient)
+        UParticleSystemComponent* ParticleSystemComp;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+    
+    UPROPERTY(Transient)
+        UAudioComponent* FireAC;
+    
+    UAudioComponent* PlayWeaponSound(USoundCue* Sound);
 
 public:	
 	// Called every frame

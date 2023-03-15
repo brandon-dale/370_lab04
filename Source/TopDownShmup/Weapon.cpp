@@ -9,15 +9,18 @@ AWeapon::AWeapon()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
     
-    USkeletalMeshComponent* WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("RootComponent"));
+    WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("RootComponent"));
     RootComponent = WeaponMesh;
-
+    
+    
+    
 }
 
 // Called when the game starts or when spawned
 void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
+    
 	
 }
 
@@ -31,11 +34,51 @@ void AWeapon::Tick(float DeltaTime)
 
 void AWeapon::OnStartFire()
 {
-    return;
+    FireAC = PlayWeaponSound(FireLoopSound);
+    
+    // QUESTIONABLE???
+    ParticleSystemComp = UGameplayStatics::SpawnEmitterAttached(MuzzleFX, RootComponent, TEXT("MuzzleFlashSocket"));
+//    if (ParticleSystemComp)
+//    {
+//        ParticleSystemComp->ActivateSystem();
+//    }
+    
+    if (GEngine)
+    {
+        GEngine->AddOnScreenDebugMessage(1, 0.5f, FColor::Green, FString::Printf(TEXT("OnStartFire Called")));
+    }
 }
 
 
 void AWeapon::OnStopFire()
 {
-    return;
+    // Stop the sound and play the finished sound
+    if (FireAC)
+    {
+        FireAC->Stop();
+    }
+    PlayWeaponSound(FireFinishSound);
+    
+    if (ParticleSystemComp)
+    {
+        ParticleSystemComp->DeactivateSystem();
+    }
+    
+    if (GEngine)
+    {
+        GEngine->AddOnScreenDebugMessage(2, 0.5f, FColor::Green, FString::Printf(TEXT("OnStopFire Called")));
+    }
+}
+
+
+UAudioComponent* AWeapon::PlayWeaponSound(USoundCue* Sound)
+{
+    UAudioComponent* AC = NULL;
+    
+    if (Sound)
+    {
+        AC = UGameplayStatics::SpawnSoundAttached(Sound, RootComponent);
+    }
+    
+    return AC;
 }

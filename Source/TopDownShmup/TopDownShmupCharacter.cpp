@@ -32,6 +32,9 @@ ATopDownShmupCharacter::ATopDownShmupCharacter()
 	TopDownCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	TopDownCameraComponent->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
+    // Set the initial Health
+    Health = 100.0f;
+    Alive = true;
 }
 
 
@@ -56,6 +59,8 @@ void ATopDownShmupCharacter::BeginPlay()
             if (MyWeapon)
             {
                 MyWeapon->WeaponMesh->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), TEXT("WeaponPoint"));
+                
+                MyWeapon->MyPawn = this;
             }
             
         }
@@ -77,4 +82,59 @@ void ATopDownShmupCharacter::OnStopFire()
     {
         MyWeapon->OnStopFire();
     }
+}
+
+float ATopDownShmupCharacter::TakeDamage(float DamageTaken, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+    float ActualDamage = Super::TakeDamage(DamageTaken, DamageEvent, EventInstigator, DamageCauser);
+    
+    if (ActualDamage > 0.0f)
+    {
+        // TODO: Add a debug message on screen to know dwarf got hit
+        if (GEngine)
+        {
+            GEngine->AddOnScreenDebugMessage(1, 1.0f, FColor::Green, FString::Printf(TEXT("Player Hit!")));
+        }
+        
+        // Reduce health points
+        Health -= ActualDamage;
+        if (Health <= 0.0f)
+        {
+            // We're dead
+            SetCanBeDamaged(false);  // Don't allow further damage
+            // Process death
+            Alive = false;
+            // Disable Controls and stop firing
+            AController* PlayerController = GetController();
+            if (PlayerController)
+            {
+                PlayerController->SetIgnoreLookInput(true);
+                PlayerController->SetIgnoreMoveInput(true);
+                
+                OnStopFire();
+            }
+            
+            // Play the death animation
+            DeathAnimDur = PlayAnimMontage(DeathAnim);
+            GetWorldTimerManager().SetTimer(DeathAnimTimerMgr, this, &ATopDownShmupCharacter::DeactiveSkeletalMesh, DeathAnimDur, false, DeathAnimDur - 0.25);
+        }
+    }
+    
+    return ActualDamage;
+}
+
+// Returns true if the player is dead
+bool ATopDownShmupCharacter::IsDead() const
+{
+    return !Alive;
+}
+
+void ATopDownShmupCharacter::DeactiveSkeletalMesh()
+{
+//    if (GEngine)
+//    {
+//        GEngine->AddOnScreenDebugMessage(3, 1.0f, FColor::Green, FString::Printf(TEXT("TODO!!! DEACTIVE THE PLAYER SKELETAL MESH")));
+//    }
+    // Add if statement
+    GetMesh()->Deactivate();
 }

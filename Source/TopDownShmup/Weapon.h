@@ -38,6 +38,8 @@ public:
     
     UPROPERTY(Transient)
         UParticleSystemComponent* ParticleSystemComp;
+    
+    APawn* MyPawn;
 
 protected:
 	// Called when the game starts or when spawned

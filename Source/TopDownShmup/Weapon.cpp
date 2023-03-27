@@ -34,19 +34,16 @@ void AWeapon::Tick(float DeltaTime)
 
 void AWeapon::OnStartFire()
 {
+    // Start firing sound
     FireAC = PlayWeaponSound(FireLoopSound);
     
-    // QUESTIONABLE???
+    // Muzzle Flash
     ParticleSystemComp = UGameplayStatics::SpawnEmitterAttached(MuzzleFX, RootComponent, TEXT("MuzzleFlashSocket"));
-//    if (ParticleSystemComp)
-//    {
-//        ParticleSystemComp->ActivateSystem();
-//    }
     
-    if (GEngine)
-    {
-        GEngine->AddOnScreenDebugMessage(1, 0.5f, FColor::Green, FString::Printf(TEXT("OnStartFire Called")));
-    }
+//    if (GEngine)
+//    {
+//        GEngine->AddOnScreenDebugMessage(1, 0.5f, FColor::Green, FString::Printf(TEXT("OnStartFire Called")));
+//    }
 }
 
 
@@ -59,15 +56,16 @@ void AWeapon::OnStopFire()
     }
     PlayWeaponSound(FireFinishSound);
     
+    // Stop muzzle flash
     if (ParticleSystemComp)
     {
         ParticleSystemComp->DeactivateSystem();
     }
     
-    if (GEngine)
-    {
-        GEngine->AddOnScreenDebugMessage(2, 0.5f, FColor::Green, FString::Printf(TEXT("OnStopFire Called")));
-    }
+//    if (GEngine)
+//    {
+//        GEngine->AddOnScreenDebugMessage(2, 0.5f, FColor::Green, FString::Printf(TEXT("OnStopFire Called")));
+//    }
 }
 
 

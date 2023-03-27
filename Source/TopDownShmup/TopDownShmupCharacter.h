@@ -35,9 +35,25 @@ public:
     UPROPERTY(EditAnywhere, Category=Weapon)
     TSubclassOf<AWeapon> WeaponClass;
     
-    
     void OnStartFire();
     void OnStopFire();
 
+    UPROPERTY(EditAnywhere)
+    float Health;
+    
+    bool Alive;
+    
+    virtual float TakeDamage(float DamageTaken, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
+    bool IsDead() const;
+    
+    UPROPERTY(EditDefaultsOnly)
+        UAnimMontage* DeathAnim;
+    
+    float DeathAnimDur;
+    
+    FTimerHandle DeathAnimTimerMgr;
+    
+    void DeactiveSkeletalMesh();
 };
 
